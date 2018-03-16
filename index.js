@@ -1,24 +1,29 @@
-var http = require('http');
+var fs = require('fs');
 
-function getRecentNodeVersion(callback) {
-    console.log(0);
-    http.get('http://nodejs.org/dist/index.json', function (err, nodeVersions) {
-        console.log(0);
+function readFileGetWord(callback) {
+    // I'm gonna log before we async stuff
+    console.log(3);
+    fs.readFile('data.json', 'utf8',function (err, fileString) {
+        // all the normal stuff is done, so let's show what this async did
+        console.log(13);
         if (err) {
             callback(err);
             // if this returned a value where would it go?
             return
         }
+        var data = JSON.parse(fileString);
         //this is weird for a callback to return a value, just think about it
-        var words = callback(null, nodeVersions[0].version);
-        console.log(words);
-        console.log(0);
+        var words = callback(null, data[0]);
+        console.log("Value returned from callback inside readFileGetWord:", words);
+        // this will wrap up readFile
+        console.log(16);
 
         //where does this string go?
         return "more words";
     });
 
-    console.log(0);
+    // he's asyncing, so I'll log while he's busy
+    console.log(4);
 
     //it is weird for the "node-pattern of handling async problems" to return something (don't do this) 
     //but I want you to think about this to fully understand async flow of execution
@@ -27,23 +32,27 @@ function getRecentNodeVersion(callback) {
 }
 
 function addNumbers(a, b, callback) {
-    console.log(0);
+    // you called?
+    console.log(6);
     var notANumber = callback(null, a + b);
-    console.log(notANumber);
-    console.log(0);
+    console.log("Value returned from callback in addNumbers:", notANumber);
+    // callback is done, NOW we log 8
+    console.log(8);
     //it is weird for the "node-pattern of handling async problems" to return something (don't do this) 
     //but I want you to think about this to fully understand async flow of execution
     //and to understand the difference between an async function and a callback
-    return 500;
+    return "dog";
 }
 
 
 function start() {
     var text, number;
 
-    console.log(0)
-    text = getRecentNodeVersion(function (err, nodeVersion) {
-        console.log(0);
+    // log 2 before we ACTUALLY start
+    console.log(2)
+    text = readFileGetWord(function (err, word) {
+        // this is the callback used in readFile. Finally we get to log
+        console.log(14);
 
         if (err) {
             console.log(err);
@@ -51,33 +60,39 @@ function start() {
             return;
         }
 
-        console.log("Current Node Version:", nodeVersion);
-        console.log(0);
+        console.log("Word from file:", word);
+        // let's log before we finish this callback
+        console.log(15);
 
         //this return is also weird, just want you to think about it
         return "this is weird";
     })
 
-    console.log(0);
+    // we're back from readFileGetWord
+    console.log(5);
     number = addNumbers(2, 3, function (err, sum) {
-        if (err) {
+        if(err){
             console.log(err);
             //if this returned a value where would it go?
             return;
         }
-        console.log(0);
-        console.log(sum);
+        // log 7 next as we wait for the callback
+        console.log(7);
+        console.log("Sum:", sum);
         //this return is also weird, just want you to think about it
         return "not a number";
     });
 
-    console.log(0);
-    console.log(number);
-    console.log(0);
-    console.log(text);
-    console.log(0);
+    // we've got our requested values, so we'll go from here
+    console.log(9);
+    console.log("Value returned from addNumbers:", number);
+    console.log(10);
+    console.log("Value returned from readFileGetWord:", text);
+    console.log(11);
 }
 
-console.log(0);
+// log 1 before start
+console.log(1);
 start();
-console.log(0);
+// much to my surprise, we log this, but we're not done
+console.log(12);
