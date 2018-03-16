@@ -68,7 +68,7 @@ function start() {
         return "this is weird";
     })
 
-    // we're back from readFileGetWord
+    // we're back from readFileGetWord function
     console.log(5);
     number = addNumbers(2, 3, function (err, sum) {
         if(err){
